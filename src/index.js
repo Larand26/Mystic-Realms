@@ -1,45 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
   const element = document.getElementById("protagonista");
-  let position = 50; // Posição inicial
-  let move = false;
-  let velocidade = 5;
+  let positionX = 50; // Posição inicial
+  let positionY = 50;
+  let velocidade = 30;
+  const teclasPressionadas = new Set();
 
-  const moveRight = () => {
-    if (move) {
-      position += velocidade; // Incremento menor para movimento mais fluido
-      element.style.left = position + "px";
-      requestAnimationFrame(moveRight);
+  const moveEl = () => {
+    if (teclasPressionadas.size > 0) {
+      teclasPressionadas.forEach((tecla) => {
+        switch (tecla) {
+          case "a":
+            positionX -= velocidade;
+            break;
+          case "d":
+            positionX += velocidade;
+            break;
+          case "w":
+            positionY -= velocidade;
+            break;
+          case "s":
+            positionY += velocidade;
+            break;
+        }
+      });
+      element.style.left = positionX + "px";
+      element.style.top = positionY + "px";
+      requestAnimationFrame(moveEl);
     }
   };
-  const moveLeft = () => {
-    if (move) {
-      position -= velocidade; // Incremento menor para movimento mais fluido
-      element.style.left = position + "px";
-      requestAnimationFrame(moveLeft);
-    }
-  };
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "d" || event.key === "D") {
-      if (!move) {
-        move = true;
-        requestAnimationFrame(moveRight);
-      }
-    }
-    if (event.key === "a" || event.key === "A") {
-      if (!move) {
-        move = true;
-        requestAnimationFrame(moveLeft);
+  document.addEventListener("keydown", (evt) => {
+    const tecla = evt.key.toLowerCase();
+    if (["a", "d", "w", "s"].includes(tecla)) {
+      teclasPressionadas.add(tecla);
+      if (teclasPressionadas.size === 1) {
+        requestAnimationFrame(moveEl);
       }
     }
   });
 
-  document.addEventListener("keyup", (event) => {
-    if (event.key === "d" || event.key === "D") {
-      move = false;
-    }
-    if (event.key === "a" || event.key === "A") {
-      move = false;
-    }
+  document.addEventListener("keyup", (evt) => {
+    const tecla = evt.key.toLowerCase();
+    teclasPressionadas.delete(tecla);
   });
 });
